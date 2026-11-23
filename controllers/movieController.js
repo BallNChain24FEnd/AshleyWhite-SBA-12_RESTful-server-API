@@ -39,10 +39,32 @@ export const searchMovies = async (req, res) => {
   }
 };
 
-// Temporary movie details controller
-export const getMovieDetails = (req, res) => {
-  res.json({
-    message: "Movie details route is working!",
-    imdbID: req.params.id,
-  });
-};
+ // Get movie details using an IMDb ID
+ export const getMovieDetails = async (req, res) => {
+   // Get the IMDb ID from the URL
+   const id = req.params.id;
+
+   try {
+     // Request movie details from OMDb using Axios
+     const response = await axios.get(
+       "https://www.omdbapi.com/",
+       {
+         params: {
+           i: id,
+           apikey: process.env.OMDB_API_KEY,
+         },
+       }
+     );
+
+     // Return the movie details as JSON
+     res.json(response.data);
+   } catch (error) {
+     // Handle errors from the external API
+     console.error("Movie details error:", error.message);
+
+     res.status(500).json({
+       error: "Failed to fetch movie details",
+     });
+   }
+ };
+
